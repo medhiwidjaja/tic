@@ -1,6 +1,6 @@
 defmodule Tic.Board do
   @moduledoc """
-  Game Board
+  Game Board struct and methods to put symbol into the board, and determine the game result
   """
 
   @type t :: %__MODULE__{cells: map()}

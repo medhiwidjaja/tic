@@ -1,6 +1,6 @@
 defmodule Tic.Game do
   @moduledoc """
-  This is the game logic
+  Game struct and functions to change and query the game state
   """
 
   alias Tic.Board
@@ -125,6 +125,7 @@ defmodule Tic.Game do
   """
   def status(game),
     do: %__MODULE__{
+      name: game.name,
       x: game.x,
       o: game.o,
       status: game.status,
