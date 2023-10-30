@@ -12,9 +12,8 @@ defmodule Tic.Application do
       Tic.Repo,
       {DNSCluster, query: Application.get_env(:tic, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Tic.PubSub},
-      # Start a worker by calling: Tic.Worker.start_link(arg)
-      # {Tic.Worker, arg},
-      # Start to serve requests, typically the last entry
+      {Registry, keys: :unique, name: Tic.GameRegistry},
+      Tic.GameSupervisor,
       TicWeb.Endpoint
     ]
 
