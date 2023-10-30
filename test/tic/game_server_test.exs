@@ -93,7 +93,7 @@ defmodule Tic.GameServerTest do
            }
   end
 
-  test "Sam wins the game" do
+  test "Sam won the game" do
     GameServer.join(@game_name, @jane)
     GameServer.make_move(@game_name, @sam, 5)
     GameServer.make_move(@game_name, @jane, 1)
@@ -103,7 +103,7 @@ defmodule Tic.GameServerTest do
 
     assert GameServer.status(@game_name) == %Game{
              name: "ninja-game",
-             x: @sam,
+             x: %Player{@sam | streak: 1},
              o: @jane,
              board: %Tic.Board{
                cells: %{

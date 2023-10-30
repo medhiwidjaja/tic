@@ -18,4 +18,17 @@ defmodule Tic.Player do
     type: :human,
     id: nil
   )
+
+  @doc """
+  Increment the player's streak
+
+  ## Examples
+
+    iex> %{streak: streak} = Tic.Player.increment_streak(%Tic.Player{})
+    iex> streak
+    1
+  """
+  def increment_streak(player) do
+    %__MODULE__{player | streak: player.streak + 1}
+  end
 end

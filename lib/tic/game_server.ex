@@ -79,8 +79,21 @@ defmodule Tic.GameServer do
          %{next: next_turn} <- game do
       cond do
         players_symbol == next_turn ->
-          updated_game = Game.make_move(game, player.symbol, cell)
-          {:reply, updated_game, updated_game}
+          updated = Game.make_move(game, player.symbol, cell)
+
+          updated =
+            case updated.winner do
+              %Player{symbol: :x} ->
+                %Game{updated | x: Player.increment_streak(player)}
+
+              %Player{symbol: :o} ->
+                %Game{updated | o: Player.increment_streak(player)}
+
+              nil ->
+                updated
+            end
+
+          {:reply, updated, updated}
 
         true ->
           {:reply, {:error, "Not player's turn"}, game}
