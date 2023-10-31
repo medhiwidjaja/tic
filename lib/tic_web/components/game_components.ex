@@ -14,14 +14,14 @@ defmodule TicWeb.GameComponents do
 
   def game_board(assigns) do
     ~H"""
-    <div class="w-[300px] h-[300px] mx-auto bg-zinc-300 grid grid-cols-3 gap-2 place-content-center">
+    <div class="w-[310px] h-[310px] mx-auto bg-zinc-300 grid grid-cols-3 gap-2 place-content-center">
       <%= for i <- 1..9 do %>
         <.cell
           symbol={@board.cells[i]}
           cell={i}
           player={@player_symbol}
           disable={@disable}
-          class={Enum.member?(@strike, i) && "bg-blue-300"}
+          highlight={Enum.member?(@strike, i)}
         />
       <% end %>
     </div>
@@ -32,14 +32,15 @@ defmodule TicWeb.GameComponents do
   attr :cell, :integer
   attr :player, :string
   attr :disable, :boolean
+  attr :highlight, :boolean, default: false
   attr :class, :string, default: nil
 
   def cell(assigns) do
     ~H"""
     <div
       class={[
-        "h-[100px] flex bg-white items-center justify-center border-indigo-500",
-        @class
+        "h-[100px] w-[100px] flex items-center justify-center border-indigo-500",
+        if(@highlight, do: "bg-blue-300", else: "bg-white")
       ]}
       phx-click={!@disable && "make-move"}
       phx-value-player={@player}
@@ -84,7 +85,7 @@ defmodule TicWeb.GameComponents do
       <ul>
         <li :for={game <- @games} id={game.name}>
           <.link navigate={~p"/games/#{game.name}"} class="h-10 border-top border-zinc-200">
-            <%= game.x.name %> vs <%= game.o.name %>
+            <%= game.name %> ( <%= game.x && game.x.name %> vs <%= game.o && game.o.name %> )
           </.link>
         </li>
       </ul>

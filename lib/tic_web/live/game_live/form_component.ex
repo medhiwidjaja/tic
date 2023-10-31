@@ -44,10 +44,10 @@ defmodule TicWeb.GameLive.FormComponent do
   @impl true
   @spec handle_event(<<_::32>>, map(), Phoenix.LiveView.Socket.t()) ::
           {:noreply, Phoenix.LiveView.Socket.t()}
-  def handle_event("save", %{"name" => game_name, "vs" => vs}, socket) do
+  def handle_event("save", %{"name" => name, "vs" => vs}, socket) do
     current_user = socket.assigns.current_user
     player1 = %Player{name: current_user.name, id: current_user.id}
-    IO.inspect(vs, label: "VS")
+    game_name = URI.encode(name)
 
     case vs do
       "AI" ->

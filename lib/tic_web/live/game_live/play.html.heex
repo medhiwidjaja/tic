@@ -12,13 +12,21 @@
         <.game_message game={@game} />
       </:messages>
       <:buttons>
-        <%= if @game.finished do %>
-          <.action_button phx-click="reset">Play again?</.action_button>
-        <% else %>
-          <.action_button phx-click="reset" data-confirm="Are you sure?">
-            Restart game
-          </.action_button>
-        <% end %>
+        <.action_button :if={@game.finished} phx-click="reset">Play again?</.action_button>
+        <.action_button
+          :if={@game.status == :in_progress}
+          phx-click="reset"
+          data-confirm="Are you sure?"
+        >
+          Restart game
+        </.action_button>
+        <.action_button
+          :if={@game.status == :init && @game.x !== @player}
+          phx-click="join"
+          phx-value-player={@current_user.name}
+        >
+          Join this game
+        </.action_button>
       </:buttons>
     </.game_card>
     <div class="bg-zinc-300 mx-5 h-full">
@@ -26,3 +34,15 @@
     </div>
   </div>
 </div>
+
+<.modal
+  :if={@game.status == :init && @game.x == @player}
+  id="new-modal"
+  show
+  on_cancel={JS.patch(~p"/games/#{@game_name}/play")}
+>
+  <.card>
+    Share this URL with your friend to play
+    <p><%= url(~p"/games/#{@game_name}/play") %></p>
+  </.card>
+</.modal>

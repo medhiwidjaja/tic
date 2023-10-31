@@ -70,8 +70,6 @@ defmodule TicWeb.GameLive.Play do
 
     broadcast_update("game:#{game_name}", {:update, %{game: updated_game}})
 
-    # updated_game = next_turn(updated_game)
-
     {:noreply, assign(socket, :game, updated_game)}
   end
 
@@ -79,6 +77,21 @@ defmodule TicWeb.GameLive.Play do
   def handle_event("reset", _, %{assigns: %{game_name: game_name}} = socket) do
     game = Tic.GameServer.reset(game_name)
     broadcast_update("game:#{game.name}", {:update, %{game: game}})
+    {:noreply, assign(socket, :game, game)}
+  end
+
+  @impl true
+  def handle_event(
+        "join",
+        %{"player" => name},
+        %{assigns: %{game_name: game_name}} = socket
+      ) do
+    user = Tic.Users.get_user_by_name(name)
+    player = %Tic.Player{name: user.name, id: user.id, symbol: :o}
+    game = Tic.GameServer.join(game_name, player)
+
+    broadcast_update("game:#{game.name}", {:update, %{game: game}})
+
     {:noreply, assign(socket, :game, game)}
   end
 
@@ -112,7 +125,6 @@ defmodule TicWeb.GameLive.Play do
 
     if player && player.type == :computer do
       Tic.GameServer.make_move(game.name, player)
-      |> IO.inspect(label: "COMPUTER UPDATE")
     else
       game
     end
