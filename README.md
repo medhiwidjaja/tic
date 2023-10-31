@@ -27,5 +27,11 @@ $ mix phx.server
 
 Then go to "http://localhost:4000" to view the app.
 
+### Note
+
+This project doesn't implement all the requirements as specified in [TASK.md](TASK.md). Nor has it sufficient
+tests for cover the code.
+
+
 
 
