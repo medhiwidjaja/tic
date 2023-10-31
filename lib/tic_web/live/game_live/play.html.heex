@@ -29,9 +29,17 @@
         </.action_button>
       </:buttons>
     </.game_card>
-    <div class="bg-zinc-300 mx-5 h-full">
-      Chat Box
-    </div>
+    <.card class="bg-zinc-300 mx-5 h-full">
+      <.chat_room messages={@messages}>
+        <.live_component
+          id="ChatName"
+          module={TicWeb.GameLive.ChatInputComponent}
+          current_user={@current_user}
+          game_name={@game.name}
+          text_input={@text_input}
+        />
+      </.chat_room>
+    </.card>
   </div>
 </div>
 

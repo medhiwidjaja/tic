@@ -1,8 +1,6 @@
 defmodule TicWeb.GameLive.Show do
   use TicWeb, :live_view
 
-  # alias Tic.{Game, Player}
-
   @impl true
   def mount(params, _session, socket) do
     game_name = params["id"]
@@ -10,6 +8,7 @@ defmodule TicWeb.GameLive.Show do
     if Enum.member?(Tic.active_games(), game_name) do
       game_state = Tic.status(game_name)
       Phoenix.PubSub.subscribe(Tic.PubSub, "game:#{game_name}")
+      TicWeb.GameChannel.subscribe("game:#{game_name}")
 
       {:ok,
        socket
@@ -17,6 +16,8 @@ defmodule TicWeb.GameLive.Show do
        |> assign(:next, game_state.next)
        |> assign(:turn, game_state.next)
        |> assign(:active_games, Tic.active_games())
+       |> assign(:messages, [])
+       |> assign(:text_input, "")
        |> assign(:game, game_state)}
     else
       {:ok,
@@ -36,6 +37,15 @@ defmodule TicWeb.GameLive.Show do
     {:noreply,
      socket
      |> assign(:game, game)}
+  end
+
+  @impl true
+  def handle_info(%{event: "chat", payload: %{"message" => message}}, socket) do
+    messages = socket.assigns.messages ++ [message]
+
+    {:noreply,
+     socket
+     |> assign(:messages, messages)}
   end
 
   defp disable_move?(_game, nil), do: true

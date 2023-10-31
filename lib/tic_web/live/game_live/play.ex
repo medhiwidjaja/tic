@@ -14,6 +14,7 @@ defmodule TicWeb.GameLive.Play do
     if Enum.member?(game_names, game_name) do
       game_state = Tic.status(game_name)
       Phoenix.PubSub.subscribe(Tic.PubSub, "game:#{game_name}")
+      TicWeb.GameChannel.subscribe("game:#{game_name}")
 
       {:ok,
        socket
@@ -21,6 +22,8 @@ defmodule TicWeb.GameLive.Play do
        |> assign(:next, game_state.next)
        |> assign(:player, signed_in_player(game_state, socket.assigns.current_user))
        |> assign(:active_games, Tic.active_games())
+       |> assign(:messages, [])
+       |> assign(:text_input, "")
        |> assign(:game, game_state)}
     else
       {:ok,
@@ -95,6 +98,21 @@ defmodule TicWeb.GameLive.Play do
     {:noreply, assign(socket, :game, game)}
   end
 
+  @impl true
+  def handle_event(
+        "send",
+        %{"player" => name, "message" => value},
+        %{assigns: %{game_name: game_name}} = socket
+      ) do
+    user = Tic.Users.get_user_by_name(name)
+    player = %Tic.Player{name: user.name, id: user.id, symbol: :o}
+    game = Tic.GameServer.join(game_name, player)
+
+    broadcast_update("game:#{game.name}", {:update, %{game: game}})
+
+    {:noreply, assign(socket, :game, game)}
+  end
+
   defp next_turn(%{finished: true} = game), do: game
 
   defp next_turn(game) do
@@ -111,6 +129,15 @@ defmodule TicWeb.GameLive.Play do
     {:noreply,
      socket
      |> assign(:game, game)}
+  end
+
+  @impl true
+  def handle_info(%{event: "chat", payload: %{"message" => message}}, socket) do
+    messages = socket.assigns.messages ++ [message]
+
+    {:noreply,
+     socket
+     |> assign(:messages, messages)}
   end
 
   @impl true
