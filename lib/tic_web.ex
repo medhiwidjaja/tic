@@ -83,8 +83,10 @@ defmodule TicWeb do
     quote do
       # HTML escaping functionality
       import Phoenix.HTML
-      # Core UI components and translation
+      # UI components and translation
       import TicWeb.CoreComponents
+      import TicWeb.SiteComponents
+      import TicWeb.GameComponents
       import TicWeb.Gettext
 
       # Shortcut for generating JS commands
