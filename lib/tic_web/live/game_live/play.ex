@@ -1,6 +1,8 @@
 defmodule TicWeb.GameLive.Play do
   use TicWeb, :live_view
 
+  on_mount TicWeb.UserLiveAuth
+
   # alias Tic.{Game, Player}
 
   @impl true

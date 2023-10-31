@@ -1,5 +1,6 @@
 defmodule TicWeb.Router do
   use TicWeb, :router
+  import TicWeb.UserAuth
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -8,6 +9,7 @@ defmodule TicWeb.Router do
     plug :put_root_layout, html: {TicWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
   end
 
   pipeline :api do
@@ -26,6 +28,20 @@ defmodule TicWeb.Router do
     # live "/games/:id/send", GameLive.Show, :send
     # live "/games/:id/challenge", GameLive.Show, :challenge
     live "/games/:id/play", GameLive.Play, :play
+
+    live_session :redirect_if_user_is_authenticated,
+      on_mount: [{TicWeb.UserAuth, :redirect_if_user_is_authenticated}] do
+      live("/users/register", UserRegistrationLive, :new)
+      live("/users/log_in", UserLoginLive, :new)
+    end
+
+    post("/users/log_in", UserSessionController, :create)
+  end
+
+  scope "/", TicWeb do
+    pipe_through([:browser])
+
+    delete("/users/log_out", UserSessionController, :delete)
   end
 
   # Other scopes may use custom stacks.
