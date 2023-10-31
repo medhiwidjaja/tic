@@ -91,9 +91,13 @@ defmodule TicWeb.GameLive.Play do
       ) do
     user = Tic.Users.get_user_by_name(name)
     player = %Tic.Player{name: user.name, id: user.id, symbol: :o}
-    game = Tic.GameServer.join(game_name, player)
 
-    broadcast_update("game:#{game.name}", {:update, %{game: game}})
+    game =
+      game_name
+      |> Tic.GameServer.join(player)
+      |> shuffle_players()
+
+    broadcast_update("game:#{game_name}", {:update, %{game: game}})
 
     {:noreply, assign(socket, :game, game)}
   end
@@ -108,17 +112,9 @@ defmodule TicWeb.GameLive.Play do
     player = %Tic.Player{name: user.name, id: user.id, symbol: :o}
     game = Tic.GameServer.join(game_name, player)
 
-    broadcast_update("game:#{game.name}", {:update, %{game: game}})
+    broadcast_update("game:#{game_name}", {:update, %{game: game}})
 
     {:noreply, assign(socket, :game, game)}
-  end
-
-  defp next_turn(%{finished: true} = game), do: game
-
-  defp next_turn(game) do
-    updated_game = Tic.GameServer.make_move(game.id, game.turn)
-    broadcast_update("game:#{game.id}", {:update, %{game: updated_game}})
-    updated_game
   end
 
   @doc """
@@ -146,6 +142,20 @@ defmodule TicWeb.GameLive.Play do
      socket
      |> assign(:game, game)}
   end
+
+  defp shuffle_players(game) do
+    n = :rand.uniform(20)
+    do_shuffle_players(game, n)
+  end
+
+  defp do_shuffle_players(game, 0), do: game
+
+  defp do_shuffle_players(game, n_times) do
+    :timer.sleep(100)
+    do_shuffle_players(switch_players(game), n_times - 1)
+  end
+
+  defdelegate switch_players(game), to: Tic.Game
 
   defp maybe_make_computer_move(game) do
     player = Tic.Game.get_player(game, game.next)

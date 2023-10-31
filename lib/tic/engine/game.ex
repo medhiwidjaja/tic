@@ -201,4 +201,14 @@ defmodule Tic.Game do
       status: :ready,
       next: :x
     }
+
+  @doc """
+  Switch players
+  """
+  def switch_players(game) do
+    x = %Tic.Player{game.o | symbol: :x}
+    o = %Tic.Player{game.x | symbol: :o}
+
+    %__MODULE__{x: o, o: x}
+  end
 end

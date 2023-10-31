@@ -104,7 +104,7 @@ defmodule Tic.GameServer do
           {:reply, updated, updated}
 
         true ->
-          {:reply, {:error, "Not player's turn"}, game}
+          {:reply, game, game}
       end
     end
   end
