@@ -50,8 +50,10 @@ defmodule Tic.GameServer do
   end
 
   def get_pid(game_name) do
-    [{pid, nil}] = Registry.lookup(@game_registry, game_name)
-    pid
+    case Registry.lookup(@game_registry, game_name) do
+      [{pid, nil}] -> pid
+      [] -> nil
+    end
   end
 
   def reset(game_name) do
@@ -66,8 +68,7 @@ defmodule Tic.GameServer do
   def init([name, player]) do
     {:ok,
      name
-     |> Game.new(player)
-     |> Game.put_player(:o, %Player{name: "AI", type: :computer, symbol: :o})}
+     |> Game.new(player)}
   end
 
   def handle_call({:join, player}, _from, game) do

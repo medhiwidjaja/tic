@@ -9,7 +9,9 @@ defmodule TicWeb.GameLive.Play do
   def mount(params, _session, socket) do
     game_name = params["id"]
 
-    if Enum.member?(Tic.active_games(), game_name) do
+    game_names = Tic.active_games()
+
+    if Enum.member?(game_names, game_name) do
       game_state = Tic.status(game_name)
       Phoenix.PubSub.subscribe(Tic.PubSub, "game:#{game_name}")
 
@@ -134,8 +136,8 @@ defmodule TicWeb.GameLive.Play do
   end
 
   defp signed_in_player(game, current_user) do
-    xid = game.x.id
-    oid = game.o.id
+    xid = game.x && game.x.id
+    oid = game.o && game.o.id
 
     case current_user.id do
       ^xid -> game.x

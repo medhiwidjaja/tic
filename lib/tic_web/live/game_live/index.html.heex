@@ -2,19 +2,16 @@
   <div class="grid grid-cols-1 gap-6 py-1 px-1 lg:py-10 lg:px-6 lg:grid-cols-2 rounded-box">
     <.card>
       <.link
+        :if={@logged_in}
         navigate={~p"/games/new"}
-        class="rounded-xl bg-red-900 hover:bg-red-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+        class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
       >
         Start a new game
       </.link>
-      <div>Running Games:</div>
-      <div>
-        <ul>
-          <li :for={active_game <- @active_games} id={active_game}>
-            <.link navigate={~p"/games/#{active_game}"}><%= active_game %></.link>
-          </li>
-        </ul>
-      </div>
+      <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+        Running Games
+      </h5>
+      <.running_games games={@active_games} />
     </.card>
     <.game_card name1="Sam">
       <.card class="w-[320px] h-[320px]">Let's play</.card>
@@ -27,7 +24,12 @@
   </div>
 </div>
 
-<.modal :if={@live_action == :new} id="new-modal" show on_cancel={JS.patch(~p"/games")}>
+<.modal
+  :if={@live_action == :new && @logged_in}
+  id="new-modal"
+  show
+  on_cancel={JS.patch(~p"/games")}
+>
   <.live_component
     id="Name"
     module={TicWeb.GameLive.FormComponent}

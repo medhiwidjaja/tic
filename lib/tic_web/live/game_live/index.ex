@@ -5,9 +5,12 @@ defmodule TicWeb.GameLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
+    logged_in = Map.has_key?(socket.assigns, :current_user)
+
     {:ok,
      socket
-     |> assign(:active_games, Tic.active_games())}
+     |> assign(:active_games, Tic.active_games() |> Enum.map(&Tic.GameServer.status/1))
+     |> assign(:logged_in, logged_in)}
   end
 
   # Callbacks

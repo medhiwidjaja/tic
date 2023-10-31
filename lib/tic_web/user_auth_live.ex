@@ -11,17 +11,16 @@ defmodule TicWeb.UserLiveAuth do
           Users.get_user_by_session_token(user_token)
         end)
 
+      {:cont, socket}
+
       if socket.assigns.current_user do
-        {:cont, assign(socket, :tellme, "It's there")}
+        {:cont, socket}
       else
-        {:halt, redirect(socket, to: "/login")}
+        {:halt, push_navigate(socket, to: "/users/log_in")}
       end
     else
       _ ->
-        {:halt,
-         socket
-         |> put_flash(:error, "You are not allowed. Sorry")
-         |> push_navigate(to: "/games")}
+        {:cont, socket}
     end
   end
 end

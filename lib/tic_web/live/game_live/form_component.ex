@@ -47,6 +47,7 @@ defmodule TicWeb.GameLive.FormComponent do
   def handle_event("save", %{"name" => game_name, "vs" => vs}, socket) do
     current_user = socket.assigns.current_user
     player1 = %Player{name: current_user.name, id: current_user.id}
+    IO.inspect(vs, label: "VS")
 
     case vs do
       "AI" ->
@@ -59,7 +60,7 @@ defmodule TicWeb.GameLive.FormComponent do
          |> push_navigate(to: ~p"/games/#{game_name}/play")}
 
       "human" ->
-        {:ok, _, game_name} = Tic.new_game(game_name, player1)
+        Tic.new_game(game_name, player1)
 
         {:noreply,
          socket

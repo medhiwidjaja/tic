@@ -76,6 +76,22 @@ defmodule TicWeb.GameComponents do
     """
   end
 
+  attr :games, :list
+
+  def running_games(assigns) do
+    ~H"""
+    <div>
+      <ul>
+        <li :for={game <- @games} id={game.name}>
+          <.link navigate={~p"/games/#{game.name}"} class="h-10 border-top border-zinc-200">
+            <%= game.x.name %> vs <%= game.o.name %>
+          </.link>
+        </li>
+      </ul>
+    </div>
+    """
+  end
+
   defp message(:won, winner, _turn) do
     "#{winner.name} won!"
   end
