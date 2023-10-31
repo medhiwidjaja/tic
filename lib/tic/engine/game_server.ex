@@ -72,7 +72,13 @@ defmodule Tic.GameServer do
 
   def handle_call({:join, player}, _from, game) do
     updated_game = Game.put_player(game, player.symbol, player)
-    {:reply, updated_game, updated_game}
+
+    with %{x: x, o: o} when not is_nil(x) and not is_nil(o) <- updated_game do
+      {:reply, updated_game, Game.set_status(updated_game, :ready)}
+    else
+      _ ->
+        {:reply, updated_game, updated_game}
+    end
   end
 
   def handle_call({:make_move, player, cell}, _from, game) do

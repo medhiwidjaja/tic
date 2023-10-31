@@ -15,11 +15,19 @@ defmodule Tic.GameServerTest do
   end
 
   test "status of a new game with the given player and default AI player" do
-    assert GameServer.status(@game_name) == %Game{name: @game_name, x: @sam, o: @ai_player}
+    assert GameServer.status(@game_name) == %Game{
+             name: @game_name,
+             x: @sam,
+             o: @ai_player
+           }
   end
 
   test "Jane joins as a second player" do
-    assert GameServer.join(@game_name, @jane) == %Game{name: @game_name, x: @sam, o: @jane}
+    assert GameServer.join(@game_name, @jane) == %Game{
+             name: @game_name,
+             x: @sam,
+             o: @jane
+           }
   end
 
   test "Sam makes a move to cell 5" do
@@ -87,7 +95,7 @@ defmodule Tic.GameServerTest do
              round: 9,
              status: :tie,
              winner: nil,
-             strike: nil,
+             strike: [],
              next: nil,
              finished: true
            }

@@ -47,7 +47,7 @@ defmodule Tic.Game do
     round: 0,
     next: :x,
     winner: nil,
-    strike: nil,
+    strike: [],
     finished: false}
   """
   @spec new(String.t(), String.t() | nil) :: Tic.Game.t()
@@ -136,6 +136,17 @@ defmodule Tic.Game do
       strike: game.strike,
       finished: game.finished
     }
+
+  @doc """
+  Set stage of the game
+
+  ## Examples
+
+    iex> %{status: status} = Tic.Game.set_status(%Tic.Game{}, :ready)
+    iex> status
+    :ready
+  """
+  def set_status(game, new_status), do: %__MODULE__{game | status: new_status}
 
   @doc """
   Put a player into position for the symbol
