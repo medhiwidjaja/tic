@@ -1,0 +1,32 @@
+<div class="pt-6 lg:px-24">
+  <div class="grid grid-cols-1 gap-6 py-1 px-1 lg:py-10 lg:px-6 lg:grid-cols-2 rounded-box">
+    <.card>
+      <.link
+        navigate={~p"/games/new"}
+        class="rounded-xl bg-red-900 hover:bg-red-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+      >
+        Start a new game
+      </.link>
+    </.card>
+    <.game_card name1="Sam">
+      <.card class="w-[320px] h-[320px]">Let's play</.card>
+      <:buttons>
+        <.action_button phx-click="restart">Play again?</.action_button>
+      </:buttons>
+    </.game_card>
+
+    <.card class="bg-zinc-300 mx-5 h-full">
+      Running Games:
+    </.card>
+  </div>
+</div>
+
+<.modal :if={@live_action == :new} id="new-modal" show on_cancel={JS.patch(~p"/games")}>
+  <.live_component
+    id="Name"
+    module={TicWeb.GameLive.FormComponent}
+    title={@page_title}
+    action={@live_action}
+    patch={~p"/games"}
+  />
+</.modal>

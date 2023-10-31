@@ -18,6 +18,14 @@ defmodule TicWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/games", GameLive.Index, :index
+    live "/games/new", GameLive.Index, :new
+
+    live "/games/:id", GameLive.Show, :show
+    # live "/games/:id/send", GameLive.Show, :send
+    # live "/games/:id/challenge", GameLive.Show, :challenge
+    live "/games/:id/play", GameLive.Play, :play
   end
 
   # Other scopes may use custom stacks.

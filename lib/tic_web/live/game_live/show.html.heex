@@ -1,0 +1,33 @@
+<div class="lg:px-24">
+  <div class="grid grid-cols-1 gap-6 py-1 px-1 lg:py-10 lg:px-6 lg:grid-cols-2 rounded-box">
+    <div>
+      <.game_board
+        board={@game.board}
+        player_symbol={@turn}
+        disable={disable_move?(@game, @player)}
+      />
+
+      <.action_buttons>
+        <%= if @game.finished do %>
+          <.link
+            phx-click="restart"
+            class="rounded-xl bg-red-900 hover:bg-red-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+          >
+            Play again?
+          </.link>
+        <% else %>
+          <.link
+            phx-click="restart"
+            data-confirm="Are you sure?"
+            class="rounded-xl bg-red-900 hover:bg-red-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80"
+          >
+            Restart
+          </.link>
+        <% end %>
+      </.action_buttons>
+    </div>
+    <div class="bg-zinc-300 mx-5 h-full">
+      Chat Box
+    </div>
+  </div>
+</div>
