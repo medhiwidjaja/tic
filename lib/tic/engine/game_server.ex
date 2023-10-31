@@ -31,11 +31,12 @@ defmodule Tic.GameServer do
   @doc """
   Make move for human player
   """
-  @spec make_move(String.t(), Player.t(), :integer) :: Game.t()
+  @spec make_move(String.t(), Player.t(), Integer.t()) :: Game.t()
   def make_move(game_name, player, cell) do
     GenServer.call(via_tuple(game_name), {:make_move, player, cell})
   end
 
+  @spec make_move(any(), Tic.Player.t()) :: Game.t()
   @doc """
   Make move for computer player
   """

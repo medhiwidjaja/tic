@@ -14,7 +14,7 @@ defmodule Tic.Game do
           round: integer(),
           next: atom(),
           winner: any(),
-          strike: atom(),
+          strike: list(),
           finished: boolean()
         }
 
@@ -29,7 +29,7 @@ defmodule Tic.Game do
     round: 0,
     next: :x,
     winner: nil,
-    strike: nil,
+    strike: [],
     finished: false
   )
 
@@ -82,7 +82,7 @@ defmodule Tic.Game do
     iex> board = %Tic.Board{cells: %{1 => :x, 2 => :x, 3 => nil, 4 => :o, 5 => nil, 6 => nil, 7 => :o, 8 => nil, 9 => nil}}
     iex> game = %Tic.Game{x: "Sam", board: board, round: 4, next: :x}
     iex> Tic.Game.make_move(game, :x, 3)
-    %Tic.Game{x: "Sam", finished: true, status: :won, winner: "Sam", round: 5, strike: :row1, next: nil, board: %{board | cells: %{board.cells | 3 => :x}}}
+    %Tic.Game{x: "Sam", finished: true, status: :won, winner: "Sam", round: 5, strike: [1,2,3], next: nil, board: %{board | cells: %{board.cells | 3 => :x}}}
 
   """
   def make_move(%{finished: false, board: board} = game, symbol, pos) do
@@ -151,8 +151,21 @@ defmodule Tic.Game do
   def put_player(game, :x, player), do: %__MODULE__{game | x: player}
   def put_player(game, :o, player), do: %__MODULE__{game | o: player}
 
-  defp get_player(game, :x), do: game.x
-  defp get_player(game, :o), do: game.o
+  @doc """
+  Get a player by the symbol, either an atom or a string (used in the template)
+
+  ## Examples
+
+    iex> Tic.Game.get_player(%Tic.Game{x: %{name: "Sam"}}, :x)
+    %{name: "Sam"}
+
+    iex> Tic.Game.get_player(%Tic.Game{o: %Tic.Player{name: "Jane"}}, "o")
+    %Tic.Player{name: "Jane", id: nil, streak: 0, symbol: :x, type: :human}
+  """
+  def get_player(game, "x"), do: game.x
+  def get_player(game, "o"), do: game.o
+  def get_player(game, :x), do: game.x
+  def get_player(game, :o), do: game.o
 
   defp next_turn(:x), do: :o
   defp next_turn(:o), do: :x

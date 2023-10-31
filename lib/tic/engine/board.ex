@@ -71,11 +71,11 @@ defmodule Tic.Board do
 
       iex> board = %Tic.Board{cells: %{1 => :x, 2 => :x, 3 => :x, 4 => :o, 5 => nil, 6 => nil, 7 => :o, 8 => nil, 9 => nil}}
       iex> Tic.Board.check_winner(board)
-      {:x, :row1}
+      {:x, [1,2,3]}
 
       iex> board = %Tic.Board{cells: %{1 => :o, 2 => nil, 3 => :x, 4 => :x, 5 => :o, 6 => :x, 7 => :o, 8 => nil, 9 => :o}}
       iex> Tic.Board.check_winner(board)
-      {:o, :diag1}
+      {:o, [1,5,9]}
 
       iex> board = %Tic.Board{cells: %{1 => nil, 2 => nil, 3 => nil, 4 => nil, 5 => nil, 6 => nil, 7 => nil, 8 => nil, 9 => nil}}
       iex> Tic.Board.check_winner(board)
@@ -105,7 +105,7 @@ defmodule Tic.Board do
          9 => _
        })
        when symbol in @symbols,
-       do: {symbol, :row1}
+       do: {symbol, [1, 2, 3]}
 
   # Middle row win
   defp check(%{
@@ -135,7 +135,7 @@ defmodule Tic.Board do
          9 => symbol
        })
        when symbol in @symbols,
-       do: {symbol, :row3}
+       do: {symbol, [4, 5, 6]}
 
   # Left column win
   defp check(%{
@@ -150,7 +150,7 @@ defmodule Tic.Board do
          9 => _
        })
        when symbol in @symbols,
-       do: {symbol, :col1}
+       do: {symbol, [1, 4, 7]}
 
   # Middle column win
   defp check(%{
@@ -165,7 +165,7 @@ defmodule Tic.Board do
          9 => _
        })
        when symbol in @symbols,
-       do: {symbol, :col2}
+       do: {symbol, [2, 5, 8]}
 
   # Right column
   defp check(%{
@@ -180,7 +180,7 @@ defmodule Tic.Board do
          9 => symbol
        })
        when symbol in @symbols,
-       do: {symbol, :col3}
+       do: {symbol, [3, 6, 9]}
 
   # Diagonal 1, top left -> bottom right
   defp check(%{
@@ -195,7 +195,7 @@ defmodule Tic.Board do
          9 => symbol
        })
        when symbol in @symbols,
-       do: {symbol, :diag1}
+       do: {symbol, [1, 5, 9]}
 
   # Diagonal 2, top right -> bottom left
   defp check(%{
@@ -210,7 +210,7 @@ defmodule Tic.Board do
          9 => _
        })
        when symbol in @symbols,
-       do: {symbol, :diag2}
+       do: {symbol, [3, 5, 7]}
 
   defp check(_), do: nil
 end

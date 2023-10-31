@@ -121,7 +121,7 @@ defmodule Tic.GameServerTest do
              round: 5,
              status: :won,
              winner: @sam,
-             strike: :col2,
+             strike: [2, 5, 8],
              next: nil,
              finished: true
            }
