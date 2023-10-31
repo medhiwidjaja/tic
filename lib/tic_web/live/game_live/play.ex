@@ -111,7 +111,8 @@ defmodule TicWeb.GameLive.Play do
   defp message(:tie, _, _), do: "It's a tie"
   defp message(_, _, next), do: "#{next} plays next"
 
-  defp disable_move?(game, player) do
-    game.finished || !(game.status in [:ready, :in_progress]) || game.next != player.symbol
+  defp disable_move?(game, symbol) do
+    game.finished || !(game.status in [:ready, :in_progress]) ||
+      game.next != Tic.Game.get_player(game, symbol)
   end
 end

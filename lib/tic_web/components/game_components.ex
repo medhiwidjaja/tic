@@ -83,4 +83,11 @@ defmodule TicWeb.GameComponents do
   defp message(:init, _, _), do: "Let's play a game!"
   defp message(:tie, _, _), do: "It's a tie"
   defp message(_, _, next), do: "#{next} plays next"
+
+  attr :class, :string, default: nil
+
+  def x_mark(assigns), do: ~H(<img src={~p"/images/x-thin-svgrepo-com.svg"} class={@class} />)
+
+  def o_mark(assigns),
+    do: ~H(<img src={~p"/images/circle-thin-svgrepo-com.svg"} class={@class} />)
 end

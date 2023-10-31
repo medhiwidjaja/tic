@@ -4,6 +4,7 @@ defmodule TicWeb.SiteComponents do
   """
   use Phoenix.Component
   import TicWeb.CoreComponents
+  import TicWeb.GameComponents
   # alias Phoenix.LiveView.JS
 
   @doc """
@@ -93,8 +94,6 @@ defmodule TicWeb.SiteComponents do
 
   attr :name1, :string, default: nil
   attr :name2, :string, default: nil
-  attr :icon1, :string, default: "hero-user"
-  attr :icon2, :string, default: "hero-user"
   slot :messages
   slot :buttons
 
@@ -109,13 +108,13 @@ defmodule TicWeb.SiteComponents do
         <div class="absolute bottom-10 w-full px-10 flex justify-between">
           <div>
             <div class="flex h-14 w-14 items-center justify-center rounded-full border-[4px] border-white bg-pink-400 dark:!border-navy-700">
-              <.icon name={@icon1} />
+              <.x_mark class="h-10 w-10" />
             </div>
             <div class="w-full text-center text-zinc-900"><%= @name1 %></div>
           </div>
           <div>
             <div class="flex h-14 w-14 items-center justify-center rounded-full border-[4px] border-white bg-pink-400 dark:!border-navy-700">
-              <.icon name={@icon2} />
+              <.o_mark class="h-10 w-10" />
             </div>
             <div class="w-full text-center text-zinc-900"><%= @name2 %></div>
           </div>

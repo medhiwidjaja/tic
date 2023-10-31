@@ -37,13 +37,13 @@ defmodule TicWeb.GameLive.FormComponent do
   @impl true
   @spec handle_event(<<_::32>>, map(), Phoenix.LiveView.Socket.t()) ::
           {:noreply, Phoenix.LiveView.Socket.t()}
-  def handle_event("save", %{"name" => name, "vs" => vs}, socket) do
+  def handle_event("save", %{"name" => game_name}, socket) do
     player1 = %Player{name: name}
 
     case vs do
       "AI" ->
         player2 = %Player{name: "AI", type: :computer, symbol: :o}
-        Tic.new_game(name, player1)
+        Tic.new_game(game_name, player1)
         Tic.join(name, player2)
 
         {:noreply,
