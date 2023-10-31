@@ -17,7 +17,7 @@ defmodule TicWeb.GameLive.Play do
        socket
        |> assign(:game_name, game_name)
        |> assign(:next, game_state.next)
-       |> assign(:player, :x)
+       |> assign(:player, signed_in_player(game_state, socket.assigns.current_user))
        |> assign(:game, game_state)}
     else
       {:ok,
@@ -60,7 +60,10 @@ defmodule TicWeb.GameLive.Play do
         %{"player" => symbol, "cell" => cell},
         %{assigns: %{game_name: game_name}} = socket
       ) do
-    updated_game = Tic.make_move(game_name, symbol, cell)
+    updated_game =
+      game_name
+      |> Tic.make_move(symbol, cell)
+      |> maybe_make_computer_move()
 
     broadcast_update("game:#{game_name}", {:update, %{game: updated_game}})
 
@@ -72,7 +75,7 @@ defmodule TicWeb.GameLive.Play do
   @impl true
   def handle_event("reset", _, %{assigns: %{game_name: game_name}} = socket) do
     game = Tic.GameServer.reset(game_name)
-    broadcast_update("game:#{game.id}", {:update, %{game: game}})
+    broadcast_update("game:#{game.name}", {:update, %{game: game}})
     {:noreply, assign(socket, :game, game)}
   end
 
@@ -101,6 +104,17 @@ defmodule TicWeb.GameLive.Play do
      |> assign(:game, game)}
   end
 
+  defp maybe_make_computer_move(game) do
+    player = Tic.Game.get_player(game, game.next)
+
+    if player && player.type == :computer do
+      Tic.GameServer.make_move(game.name, player)
+      |> IO.inspect(label: "COMPUTER UPDATE")
+    else
+      game
+    end
+  end
+
   defp broadcast_update(topic, payload) do
     Phoenix.PubSub.broadcast_from!(Tic.PubSub, self(), topic, payload)
   end
@@ -113,8 +127,19 @@ defmodule TicWeb.GameLive.Play do
   defp message(:tie, _, _), do: "It's a tie"
   defp message(_, _, next), do: "#{next} plays next"
 
-  defp disable_move?(game, symbol) do
+  defp disable_move?(game, player) do
     game.finished || !(game.status in [:ready, :in_progress]) ||
-      game.next != Tic.Game.get_player(game, symbol)
+      game.next != player.symbol
+  end
+
+  defp signed_in_player(game, current_user) do
+    xid = game.x.id
+    oid = game.o.id
+
+    case current_user.id do
+      ^xid -> game.x
+      ^oid -> game.o
+      _ -> nil
+    end
   end
 end

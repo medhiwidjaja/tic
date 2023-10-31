@@ -46,7 +46,7 @@ defmodule TicWeb.GameLive.FormComponent do
           {:noreply, Phoenix.LiveView.Socket.t()}
   def handle_event("save", %{"name" => game_name, "vs" => vs}, socket) do
     current_user = socket.assigns.current_user
-    player1 = %Player{name: current_user.name}
+    player1 = %Player{name: current_user.name, id: current_user.id}
 
     case vs do
       "AI" ->

@@ -177,6 +177,7 @@ defmodule Tic.Game do
   def get_player(game, "o"), do: game.o
   def get_player(game, :x), do: game.x
   def get_player(game, :o), do: game.o
+  def get_player(_, _), do: nil
 
   defp next_turn(:x), do: :o
   defp next_turn(:o), do: :x
@@ -194,8 +195,10 @@ defmodule Tic.Game do
   """
   def reset(game),
     do: %__MODULE__{
+      name: game.name,
       x: game.x,
       o: game.o,
-      status: :ready
+      status: :ready,
+      next: :x
     }
 end

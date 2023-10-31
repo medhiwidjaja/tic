@@ -5,8 +5,6 @@ defmodule TicWeb.UserLiveAuth do
   alias Tic.Users
 
   def on_mount(:default, _params, session, socket) do
-    IO.inspect(session, label: "SESSION")
-
     with %{"user_token" => user_token} <- session do
       socket =
         assign_new(socket, :current_user, fn ->
@@ -23,7 +21,7 @@ defmodule TicWeb.UserLiveAuth do
         {:halt,
          socket
          |> put_flash(:error, "You are not allowed. Sorry")
-         |> push_navigate(to: "/tasks")}
+         |> push_navigate(to: "/games")}
     end
   end
 end

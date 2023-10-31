@@ -80,7 +80,6 @@ defmodule TicWeb.SiteComponents do
   def action_button(assigns) do
     ~H"""
     <.link
-      phx-click="restart"
       class={[
         "rounded-xl bg-red-900 hover:bg-red-700 py-2 px-3 text-sm font-semibold leading-6 text-white active:text-white/80",
         @class
