@@ -5,7 +5,9 @@ defmodule TicWeb.GameLive.Index do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    {:ok,
+     socket
+     |> assign(:active_games, Tic.active_games())}
   end
 
   # Callbacks

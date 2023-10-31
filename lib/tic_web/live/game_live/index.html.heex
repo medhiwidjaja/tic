@@ -7,6 +7,14 @@
       >
         Start a new game
       </.link>
+      <div>Running Games:</div>
+      <div>
+        <ul>
+          <li :for={active_game <- @active_games} id={active_game}>
+            <.link navigate={~p"/games/#{active_game}"}><%= active_game %></.link>
+          </li>
+        </ul>
+      </div>
     </.card>
     <.game_card name1="Sam">
       <.card class="w-[320px] h-[320px]">Let's play</.card>
@@ -15,9 +23,7 @@
       </:buttons>
     </.game_card>
 
-    <.card class="bg-zinc-300 mx-5 h-full">
-      Running Games:
-    </.card>
+    <.card class="bg-zinc-300 mx-5 h-full"></.card>
   </div>
 </div>
 

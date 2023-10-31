@@ -18,6 +18,7 @@ defmodule TicWeb.GameLive.Play do
        |> assign(:game_name, game_name)
        |> assign(:next, game_state.next)
        |> assign(:player, signed_in_player(game_state, socket.assigns.current_user))
+       |> assign(:active_games, Tic.active_games())
        |> assign(:game, game_state)}
     else
       {:ok,
