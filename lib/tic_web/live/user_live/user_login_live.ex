@@ -3,7 +3,7 @@ defmodule TicWeb.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <.card class="bg-white mx-auto max-w-sm">
+    <.card class="bg-white mt-20 mx-auto max-w-sm">
       <.header class="text-center">
         Sign in to account
         <:subtitle>
@@ -29,9 +29,16 @@ defmodule TicWeb.UserLoginLive do
     """
   end
 
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
     name = live_flash(socket.assigns.flash, :name)
     form = to_form(%{"name" => name}, as: "user")
+    socket = PhoenixLiveSession.maybe_subscribe(socket, session)
     {:ok, assign(socket, form: form), temporary_assigns: [form: form]}
+  end
+
+  def handle_info({:live_session_updated, session}, socket) do
+    {:noreply,
+     socket
+     |> assign(:user_return_to, Map.get(session, "user_return_to", []))}
   end
 end

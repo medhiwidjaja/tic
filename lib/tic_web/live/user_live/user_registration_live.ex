@@ -6,7 +6,7 @@ defmodule TicWeb.UserRegistrationLive do
 
   def render(assigns) do
     ~H"""
-    <.card class="bg-white mx-auto max-w-sm">
+    <.card class="bg-white mt-20 mx-auto max-w-sm">
       <.header class="text-center">
         Register for an account
         <:subtitle>
