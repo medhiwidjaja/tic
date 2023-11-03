@@ -9,6 +9,8 @@ defmodule TicWeb.UserSessionController do
   end
 
   def create(conn, params) do
+    conn = put_session(conn, :user_return_to, params["return_to"])
+
     create(conn, params, "Welcome back!")
   end
 

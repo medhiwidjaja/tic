@@ -4,7 +4,7 @@ defmodule TicWeb.UserLiveAuth do
 
   alias Tic.Users
 
-  def on_mount(:default, _params, session, socket) do
+  def on_mount(:default, params, session, socket) do
     with %{"user_token" => user_token} <- session do
       socket =
         assign_new(socket, :current_user, fn ->
@@ -12,15 +12,16 @@ defmodule TicWeb.UserLiveAuth do
         end)
 
       {:cont, socket}
-
-      if socket.assigns.current_user do
-        {:cont, socket}
-      else
-        {:halt, push_navigate(socket, to: "/users/log_in")}
-      end
     else
       _ ->
-        {:cont, socket}
+        with %{"id" => id} <- params,
+             %{live_action: :play} <- socket.assigns do
+          Tic.ETS.insert_game_path(id)
+          {:halt, push_navigate(socket, to: "/users/log_in?game=#{id}")}
+        else
+          _ ->
+            {:halt, push_navigate(socket, to: "/users/log_in")}
+        end
     end
   end
 end

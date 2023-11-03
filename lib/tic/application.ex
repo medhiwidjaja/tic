@@ -17,6 +17,9 @@ defmodule Tic.Application do
       TicWeb.Endpoint
     ]
 
+    # Readies the app's ETS storage
+    Tic.ETS.new()
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Tic.Supervisor]

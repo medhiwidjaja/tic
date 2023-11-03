@@ -15,7 +15,12 @@ defmodule TicWeb.UserLoginLive do
         </:subtitle>
       </.header>
 
-      <.simple_form for={@form} id="login_form" action={~p"/users/log_in"} phx-update="ignore">
+      <.simple_form
+        for={@form}
+        id="login_form"
+        action={~p"/users/log_in?return_to=#{@path}"}
+        phx-update="ignore"
+      >
         <.input field={@form[:name]} label="Name" required />
         <.input field={@form[:password]} type="password" label="Password" required />
 
@@ -29,11 +34,12 @@ defmodule TicWeb.UserLoginLive do
     """
   end
 
-  def mount(_params, session, socket) do
+  def mount(params, _session, socket) do
     name = live_flash(socket.assigns.flash, :name)
     form = to_form(%{"name" => name}, as: "user")
-    socket = PhoenixLiveSession.maybe_subscribe(socket, session)
-    {:ok, assign(socket, form: form), temporary_assigns: [form: form]}
+    path = if params["game"], do: Tic.ETS.get_game_path(params["game"]), else: "/games"
+
+    {:ok, assign(socket, form: form, path: path), temporary_assigns: [form: form]}
   end
 
   def handle_info({:live_session_updated, session}, socket) do
