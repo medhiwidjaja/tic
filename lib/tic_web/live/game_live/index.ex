@@ -1,7 +1,7 @@
 defmodule TicWeb.GameLive.Index do
   use TicWeb, :live_view
 
-  on_mount TicWeb.UserLiveAuth
+  # on_mount TicWeb.UserLiveAuth
 
   @impl true
   def mount(_params, _session, socket) do

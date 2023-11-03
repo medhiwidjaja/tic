@@ -23,9 +23,11 @@ defmodule TicWeb.GameLive.ChatInputComponent do
   end
 
   @impl true
-  def handle_event("save", message, socket) do
+  def handle_event("save", %{"message" => body}, socket) do
     game_name = socket.assigns.game_name
-    TicWeb.GameChannel.broadcast!("game:" <> game_name, "chat", message)
+    name = socket.assigns.name
+    message = %{"body" => body, "from" => name}
+    TicWeb.GameChannel.broadcast!("chat:" <> game_name, "chat", message)
     {:noreply, assign(socket, :text_input, nil)}
   end
 end

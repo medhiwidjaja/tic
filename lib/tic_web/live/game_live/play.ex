@@ -3,8 +3,6 @@ defmodule TicWeb.GameLive.Play do
 
   on_mount TicWeb.UserLiveAuth
 
-  # alias Tic.{Game, Player}
-
   @impl true
   def mount(params, _session, socket) do
     game_name = params["id"]
@@ -14,16 +12,16 @@ defmodule TicWeb.GameLive.Play do
     if Enum.member?(game_names, game_name) do
       game_state = Tic.status(game_name)
       Phoenix.PubSub.subscribe(Tic.PubSub, "game:#{game_name}")
-      TicWeb.GameChannel.subscribe("game:#{game_name}")
+      current_user = socket.assigns.current_user
+      IO.inspect(current_user, label: "CURR USER")
 
       {:ok,
        socket
        |> assign(:game_name, game_name)
        |> assign(:next, game_state.next)
-       |> assign(:player, signed_in_player(game_state, socket.assigns.current_user))
+       |> assign(:current_user, current_user)
+       |> assign(:player, signed_in_player(game_state, current_user))
        |> assign(:active_games, Tic.active_games())
-       |> assign(:messages, [])
-       |> assign(:text_input, "")
        |> assign(:game, game_state)}
     else
       {:ok,
@@ -102,20 +100,20 @@ defmodule TicWeb.GameLive.Play do
     {:noreply, assign(socket, :game, game)}
   end
 
-  @impl true
-  def handle_event(
-        "send",
-        %{"player" => name, "message" => value},
-        %{assigns: %{game_name: game_name}} = socket
-      ) do
-    user = Tic.Users.get_user_by_name(name)
-    player = %Tic.Player{name: user.name, id: user.id, symbol: :o}
-    game = Tic.GameServer.join(game_name, player)
+  # @impl true
+  # def handle_event(
+  #       "send",
+  #       %{"player" => name, "message" => value},
+  #       %{assigns: %{game_name: game_name}} = socket
+  #     ) do
+  #   user = Tic.Users.get_user_by_name(name)
+  #   player = %Tic.Player{name: user.name, id: user.id, symbol: :o}
+  #   game = Tic.GameServer.join(game_name, player)
 
-    broadcast_update("game:#{game_name}", {:update, %{game: game}})
+  #   broadcast_update("game:#{game_name}", {:update, %{game: game}})
 
-    {:noreply, assign(socket, :game, game)}
-  end
+  #   {:noreply, assign(socket, :game, game)}
+  # end
 
   @doc """
   Info event handler to update the game based on message from every move
@@ -125,15 +123,6 @@ defmodule TicWeb.GameLive.Play do
     {:noreply,
      socket
      |> assign(:game, game)}
-  end
-
-  @impl true
-  def handle_info(%{event: "chat", payload: %{"message" => message}}, socket) do
-    messages = socket.assigns.messages ++ [message]
-
-    {:noreply,
-     socket
-     |> assign(:messages, messages)}
   end
 
   @impl true

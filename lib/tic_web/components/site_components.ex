@@ -131,45 +131,4 @@ defmodule TicWeb.SiteComponents do
     </div>
     """
   end
-
-  attr :messages, :list
-  slot :inner_block, required: true
-
-  def chat_room(assigns) do
-    ~H"""
-    <div class="w-full px-5 flex flex-col justify-between">
-      <div id="messages" role="log" aria-live="polite" class="flex flex-col mt-5">
-        <div class="flex justify-start mb-4">
-          <div class="ml-2 py-3 px-4 bg-gray-400 rounded-br-lg rounded-tr-lg rounded-tl-xl text-white">
-            Type your comments!
-          </div>
-        </div>
-        <%= for message <- @messages do %>
-          <div class="flex justify-start mb-4">
-            <div class="ml-2 py-3 px-4 bg-gray-400 rounded-br-lg rounded-tr-lg rounded-tl-xl text-white">
-              <%= message %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-      <div class="py-5">
-        <%= render_slot(@inner_block) %>
-      </div>
-      <template id="temp1">
-        <div class="flex justify-end mb-1">
-          <div class="mr-2 py-1 px-1 bg-blue-400 rounded-bl-lg rounded-tl-lg rounded-tr-sm text-white">
-            <p id="1" />
-          </div>
-        </div>
-      </template>
-      <template id="temp2">
-        <div class="flex justify-end mb-1">
-          <div class="ml-2 py-3 px-4 bg-gray-400 rounded-br-sm rounded-tr-sm rounded-tl-lb text-white">
-            <p id="2" />
-          </div>
-        </div>
-      </template>
-    </div>
-    """
-  end
 end
