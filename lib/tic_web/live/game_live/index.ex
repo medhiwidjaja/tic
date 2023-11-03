@@ -1,16 +1,16 @@
 defmodule TicWeb.GameLive.Index do
   use TicWeb, :live_view
 
-  # on_mount TicWeb.UserLiveAuth
-
   @impl true
-  def mount(_params, _session, socket) do
-    logged_in = Map.has_key?(socket.assigns, :current_user)
+  def mount(_params, session, socket) do
+    logged_in? = Map.has_key?(session, "user_token")
+    current_user = logged_in? && Tic.Users.get_user_by_session_token(session["user_token"])
 
     {:ok,
      socket
+     |> assign(:current_user, current_user)
      |> assign(:active_games, Tic.active_games() |> Enum.map(&Tic.GameServer.status/1))
-     |> assign(:logged_in, logged_in)}
+     |> assign(:logged_in, logged_in?)}
   end
 
   # Callbacks
