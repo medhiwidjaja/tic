@@ -16,7 +16,6 @@ defmodule TicWeb.GameLive.Show do
        |> assign(:current_user, current_user)
        |> assign(:game_name, game_name)
        |> assign(:next, game_state.next)
-       |> assign(:turn, game_state.next)
        |> assign(:active_games, Tic.active_games())
        |> assign(:game, game_state)}
     else

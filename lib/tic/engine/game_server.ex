@@ -72,13 +72,12 @@ defmodule Tic.GameServer do
   end
 
   def handle_call({:join, player}, _from, game) do
-    updated_game = Game.put_player(game, player.symbol, player)
-
-    with %{x: x, o: o} when not is_nil(x) and not is_nil(o) <- updated_game do
-      {:reply, updated_game, Game.set_status(updated_game, :ready)}
+    with %{x: x, o: o} when not is_nil(x) and is_nil(o) <- game do
+      updated_game = Game.put_player(game, player.symbol, player)
+      {:reply, {:ok, updated_game}, Game.set_status(updated_game, :ready)}
     else
       _ ->
-        {:reply, updated_game, updated_game}
+        {:reply, {:error, "Game has two players already"}, game}
     end
   end
 

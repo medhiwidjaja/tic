@@ -3,7 +3,7 @@
     <.game_card name1={@game.x && @game.x.name} name2={@game.o && @game.o.name}>
       <.game_board
         board={@game.board}
-        player_symbol={@turn}
+        player_symbol={@next}
         strike={@game.strike}
         disable={disable_move?(@game, nil)}
       />

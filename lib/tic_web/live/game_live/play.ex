@@ -11,18 +11,31 @@ defmodule TicWeb.GameLive.Play do
 
     if Enum.member?(game_names, game_name) do
       game_state = Tic.status(game_name)
-      Phoenix.PubSub.subscribe(Tic.PubSub, "game:#{game_name}")
       current_user = socket.assigns.current_user
-      IO.inspect(current_user, label: "CURR USER")
+      player = signed_in_player(game_state, current_user)
 
-      {:ok,
-       socket
-       |> assign(:game_name, game_name)
-       |> assign(:next, game_state.next)
-       |> assign(:current_user, current_user)
-       |> assign(:player, signed_in_player(game_state, current_user))
-       |> assign(:active_games, Tic.active_games())
-       |> assign(:game, game_state)}
+      case player do
+        nil ->
+          {:ok,
+           socket
+           |> put_flash(
+             :error,
+             "Sorry, this game has 2 players already. You may watch and make comments"
+           )
+           |> push_navigate(to: ~p"/games/#{game_name}")}
+
+        _ ->
+          Phoenix.PubSub.subscribe(Tic.PubSub, "game:#{game_name}")
+
+          {:ok,
+           socket
+           |> assign(:game_name, game_name)
+           |> assign(:next, game_state.next)
+           |> assign(:current_user, current_user)
+           |> assign(:player, player)
+           |> assign(:active_games, Tic.active_games())
+           |> assign(:game, game_state)}
+      end
     else
       {:ok,
        socket
@@ -34,36 +47,13 @@ defmodule TicWeb.GameLive.Play do
   # Callbacks
 
   @impl true
-  def handle_params(params, _url, socket) do
-    {:noreply, apply_action(socket, socket.assigns.live_action, params)}
-  end
-
-  defp apply_action(socket, :show, params) do
-    game_name = params["id"]
-    game = Tic.status(game_name)
-
-    socket
-    |> assign(:game_name, game_name)
-    |> assign(:turn, game.next)
-    |> assign(:game, Tic.status(game_name))
-  end
-
-  defp apply_action(socket, :play, params) do
-    game_name = params["id"]
-    game = Tic.status(game_name)
-
-    socket
-    |> assign(:game_name, game_name)
-    |> assign(:turn, game.next)
-    |> assign(:game, Tic.status(game_name))
-  end
-
-  @impl true
   def handle_event(
         "make-move",
         %{"player" => symbol, "cell" => cell},
         %{assigns: %{game_name: game_name}} = socket
       ) do
+    IO.puts("#{symbol} on #{cell}")
+
     updated_game =
       game_name
       |> Tic.make_move(symbol, cell)
@@ -90,30 +80,20 @@ defmodule TicWeb.GameLive.Play do
     user = Tic.Users.get_user_by_name(name)
     player = %Tic.Player{name: user.name, id: user.id, symbol: :o}
 
-    game =
-      game_name
-      |> Tic.GameServer.join(player)
-      |> shuffle_players()
+    case Tic.GameServer.join(game_name, player) do
+      {:ok, game} ->
+        shuffle_players(game)
 
-    broadcast_update("game:#{game_name}", {:update, %{game: game}})
+        broadcast_update("game:#{game_name}", {:update, %{game: game}})
 
-    {:noreply, assign(socket, :game, game)}
+        {:noreply, assign(socket, :game, game)}
+
+      {:error, error_message} ->
+        {:noreply,
+         socket
+         |> put_flash(:error, error_message)}
+    end
   end
-
-  # @impl true
-  # def handle_event(
-  #       "send",
-  #       %{"player" => name, "message" => value},
-  #       %{assigns: %{game_name: game_name}} = socket
-  #     ) do
-  #   user = Tic.Users.get_user_by_name(name)
-  #   player = %Tic.Player{name: user.name, id: user.id, symbol: :o}
-  #   game = Tic.GameServer.join(game_name, player)
-
-  #   broadcast_update("game:#{game_name}", {:update, %{game: game}})
-
-  #   {:noreply, assign(socket, :game, game)}
-  # end
 
   @doc """
   Info event handler to update the game based on message from every move
