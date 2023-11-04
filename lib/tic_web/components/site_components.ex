@@ -11,15 +11,22 @@ defmodule TicWeb.SiteComponents do
   Renders contents within a card
   """
   attr :class, :string, default: nil
+  slot :header, default: nil
   slot :inner_block, required: true
+  slot :footer, default: nil
 
   def card(assigns) do
     ~H"""
-    <div class={[
-      "bg-gray-700 shadow rounded-lg p-4 sm:p-6 xl:p-8",
-      @class
-    ]}>
-      <%= render_slot(@inner_block) %>
+    <div class="rounded-lg shadow bg-gray-700 border-white shadow">
+      <div class="bg-gray-600 border-b-2 rounded-t-lg border-gray-800 px-4 py-4 lg:px-6">
+        <%= render_slot(@header) %>
+      </div>
+      <div class={[
+        "px-4 py-2 lg:px-6 lg:py-4 xl:p-6",
+        @class
+      ]}>
+        <%= render_slot(@inner_block) %>
+      </div>
     </div>
     """
   end

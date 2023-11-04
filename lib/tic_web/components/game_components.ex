@@ -71,20 +71,24 @@ defmodule TicWeb.GameComponents do
       @game.status == :init && "bg-zinc-300"
     ]}>
       <div class="w-full h-100 text-center">
-        <%= message(@game.status, @game.winner, @game.next) %>
+        <%= message(@game.status, @game) %>
       </div>
     </div>
     """
   end
 
   attr :games, :list
+  attr :title, :string, required: true
 
   def running_games(assigns) do
     ~H"""
     <div>
-      <ul>
-        <li :for={game <- @games} id={game.name}>
-          <.link navigate={~p"/games/#{game.name}"} class="h-10 border-top border-zinc-200">
+      <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+        <%= @title %>
+      </h5>
+      <ul class="list-disc">
+        <li :for={game <- @games} id={game.name} class="rounded-lg hover:bg-zinc-600 p-1">
+          <.link navigate={~p"/games/#{game.name}"}>
             <%= game.name %> ( <%= game.x && game.x.name %> vs <%= game.o && game.o.name %> )
           </.link>
         </li>
@@ -93,13 +97,13 @@ defmodule TicWeb.GameComponents do
     """
   end
 
-  defp message(:won, winner, _turn) do
+  defp message(:won, %{winner: winner} = _game) do
     "#{winner.name} won!"
   end
 
-  defp message(:init, _, _), do: "Let's play a game!"
-  defp message(:tie, _, _), do: "It's a tie"
-  defp message(_, _, next), do: "#{next} plays next"
+  defp message(:init, _game), do: "Let's play a game!"
+  defp message(:tie, _game), do: "It's a tie"
+  defp message(_, game), do: "#{Tic.Game.get_player(game, game.next).name} plays next"
 
   attr :class, :string, default: nil
 

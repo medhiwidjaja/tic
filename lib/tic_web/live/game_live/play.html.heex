@@ -3,7 +3,7 @@
     <.game_card name1={@game.x && @game.x.name} name2={@game.o && @game.o.name}>
       <.game_board
         board={@game.board}
-        player_symbol={@player.symbol}
+        player_symbol={@player && @player.symbol}
         strike={@game.strike}
         disable={disable_move?(@game, @player)}
       />
@@ -11,21 +11,24 @@
         <.game_message game={@game} />
       </:messages>
       <:buttons>
-        <.action_button :if={@game.finished} phx-click="reset">Play again?</.action_button>
-        <.action_button
-          :if={@game.status == :in_progress}
-          phx-click="reset"
-          data-confirm="Are you sure?"
-        >
-          Restart game
-        </.action_button>
-        <.action_button
-          :if={@game.status == :init && @game.x !== @player}
-          phx-click="join"
-          phx-value-player={@current_user.name}
-        >
-          Join this game
-        </.action_button>
+        <%= if @game.finished do %>
+          <.action_button phx-click="reset">Play again?</.action_button>
+        <% end %>
+        <%= if @game.status == :in_progress do %>
+          <.action_button phx-click="reset" data-confirm="Are you sure?">
+            Restart game
+          </.action_button>
+        <% end %>
+        <%= if @game.status == :init && @game.x !== @player do %>
+          <.action_button phx-click="join" phx-value-player={@current_user.name}>
+            Join this game
+          </.action_button>
+        <% end %>
+        <%= if @game.status == :ready do %>
+          <.action_button phx-click="start">
+            Start
+          </.action_button>
+        <% end %>
       </:buttons>
     </.game_card>
     <.card class="bg-zinc-300 mx-5 h-full">
@@ -44,7 +47,7 @@
   on_cancel={JS.patch(~p"/games/#{@game_name}/play")}
 >
   <.card>
-    Share this URL with your friend to play
+    <:header>Share this URL with your friend to play</:header>
     <p><%= url(~p"/games/#{@game_name}/play") %></p>
   </.card>
 </.modal>
