@@ -1,13 +1,15 @@
 defmodule TicWeb.ChatLive do
   use TicWeb, :live_view
 
+  @topic_prefix "chat:"
+
   @impl true
   def render(assigns) do
     ~H"""
     <div class="w-full px-5 flex flex-col justify-between">
       <div id="messages" role="log" aria-live="polite" class="flex flex-col mt-5">
         <div class="flex justify-start mb-4">
-          <div class="ml-2 py-3 px-4 bg-gray-400 rounded-br-lg rounded-tr-lg rounded-tl-xl text-white">
+          <div class="ml-2 py-2 px-2 bg-gray-400 rounded-br-lg rounded-tr-lg rounded-tl-xl text-white">
             Type your comments!
           </div>
         </div>
@@ -37,11 +39,9 @@ defmodule TicWeb.ChatLive do
 
   @impl true
   def mount(_params, session, socket) do
-    # logged_in? = Map.has_key?(socket.assigns, :current_user)
     game_name = session["game_name"]
     name = session["name"]
-    TicWeb.GameChannel.subscribe("chat:#{game_name}")
-    # name = logged_in? && socket.assigns.current_user.name
+    TicWeb.GameChannel.subscribe(@topic_prefix <> game_name)
 
     {:ok,
      socket

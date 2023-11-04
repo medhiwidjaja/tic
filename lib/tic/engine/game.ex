@@ -209,6 +209,6 @@ defmodule Tic.Game do
     x = %Tic.Player{game.o | symbol: :x}
     o = %Tic.Player{game.x | symbol: :o}
 
-    %__MODULE__{x: o, o: x}
+    %__MODULE__{game | x: o, o: x}
   end
 end
