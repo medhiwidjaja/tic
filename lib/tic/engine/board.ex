@@ -120,7 +120,7 @@ defmodule Tic.Board do
          9 => _
        })
        when symbol in @symbols,
-       do: {symbol, :row2}
+       do: {symbol, [4, 5, 6]}
 
   # Bottom row win
   defp check(%{
@@ -135,7 +135,7 @@ defmodule Tic.Board do
          9 => symbol
        })
        when symbol in @symbols,
-       do: {symbol, [4, 5, 6]}
+       do: {symbol, [7, 8, 9]}
 
   # Left column win
   defp check(%{

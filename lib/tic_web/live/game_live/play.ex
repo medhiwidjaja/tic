@@ -130,8 +130,6 @@ defmodule TicWeb.GameLive.Play do
 
   @impl true
   def handle_info(%{event: "update", payload: %{game: game, game_status: game_status}}, socket) do
-    player = socket.assigns.player
-
     {:noreply,
      socket
      |> assign(:game, game)
@@ -179,6 +177,8 @@ defmodule TicWeb.GameLive.Play do
 
     # Phoenix.PubSub.broadcast_from!(Tic.PubSub, self(), topic, payload)
   end
+
+  defp disable_move?(game, nil), do: true
 
   defp disable_move?(game, player) do
     game.finished || !(game.status in [:ready, :in_progress]) ||
