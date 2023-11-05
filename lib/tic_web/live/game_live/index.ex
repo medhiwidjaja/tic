@@ -9,7 +9,7 @@ defmodule TicWeb.GameLive.Index do
     {:ok,
      socket
      |> assign(:current_user, current_user)
-     |> assign(:active_games, Tic.active_games() |> Enum.map(&Tic.GameServer.status/1))
+     |> assign(:active_games, Tic.active_games() |> Enum.map(&Tic.GameServer.get_state/1))
      |> assign(:logged_in, logged_in?)}
   end
 

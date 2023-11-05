@@ -123,7 +123,7 @@ defmodule Tic.Game do
   @doc """
   Returns the current state of the game
   """
-  def status(game),
+  def get_state(game),
     do: %__MODULE__{
       name: game.name,
       x: game.x,
@@ -204,11 +204,47 @@ defmodule Tic.Game do
 
   @doc """
   Switch players
+
+  ## Examples
+
+    iex> sam = %Tic.Player{name: "Sam"}
+    iex> lucy = %Tic.Player{name: "Lucy", symbol: :o}
+    iex> game = %Tic.Game{x: sam, o: lucy, status: :ready}
+    iex> %{x: x, o: o} = Tic.Game.switch_players(game)
+    iex> x
+    %Tic.Player{name: "Lucy", symbol: :x}
+    iex> o
+    %Tic.Player{name: "Sam", symbol: :o}
   """
   def switch_players(game) do
     x = %Tic.Player{game.o | symbol: :x}
     o = %Tic.Player{game.x | symbol: :o}
 
-    %__MODULE__{game | x: o, o: x}
+    %__MODULE__{game | x: x, o: o}
+  end
+
+  @doc """
+  Determine if the game board should be disabled based on the game state and
+  who is playing
+
+  ## Examples
+
+    iex> sam = %Tic.Player{name: "Sam"}
+    iex> lucy = %Tic.Player{name: "Lucy", symbol: :o}
+    iex> game = %Tic.Game{x: sam, o: lucy, status: :in_progress}
+    iex> Tic.Game.disable_move?(game, sam)
+    false
+    iex> Tic.Game.disable_move?(game, lucy)
+    true
+    iex> game |> Tic.Game.make_move(:x, 1) |> Tic.Game.disable_move?(lucy)
+    false
+    iex> game |> Tic.Game.make_move(:x, 1) |> Tic.Game.disable_move?(sam)
+    true
+  """
+  def disable_move?(_game, nil), do: true
+
+  def disable_move?(game, player) do
+    game.finished || !(game.status in [:in_progress]) ||
+      game.next != player.symbol
   end
 end

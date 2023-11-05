@@ -13,6 +13,9 @@ defmodule TicWeb.GameComponents do
   attr :strike, :list, default: []
 
   def game_board(assigns) do
+    IO.inspect(assigns.player_symbol, label: "BOARD PLAYER SYMBOL")
+    IO.inspect(assigns.disable, label: "BOARD DISABLE?")
+
     ~H"""
     <div class="w-[310px] h-[310px] mx-auto bg-zinc-300 grid grid-cols-3 gap-2 place-content-center">
       <%= for i <- 1..9 do %>

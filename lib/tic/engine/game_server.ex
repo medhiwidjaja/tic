@@ -44,9 +44,16 @@ defmodule Tic.GameServer do
     GenServer.call(via_tuple(game_name), {:make_move, player})
   end
 
-  @spec status(String.t()) :: Game.t()
-  def status(game_name) do
-    GenServer.call(via_tuple(game_name), {:status})
+  @doc """
+  Set a new status for the game process
+  """
+  def set_status(game_name, new_status) do
+    GenServer.call(via_tuple(game_name), {:set_status, new_status})
+  end
+
+  @spec get_state(String.t()) :: Game.t()
+  def get_state(game_name) do
+    GenServer.call(via_tuple(game_name), {:get_state})
   end
 
   def get_pid(game_name) do
@@ -118,8 +125,13 @@ defmodule Tic.GameServer do
     {:reply, updated_game, updated_game}
   end
 
-  def handle_call({:status}, _from, game) do
-    {:reply, Game.status(game), game}
+  def handle_call({:set_status, new_status}, _from, game) do
+    updated_game = Game.set_status(game, new_status)
+    {:reply, updated_game, updated_game}
+  end
+
+  def handle_call({:get_state}, _from, game) do
+    {:reply, Game.get_state(game), game}
   end
 
   def handle_call({:reset}, _from, game) do

@@ -18,7 +18,7 @@ defmodule TicWeb.GameLive.FormComponent do
             Play against AI
           </.button>
           <.button name="vs" value="human" phx-disable-with="Starting...">
-            Play with you friend
+            Play with your friend
           </.button>
         </:actions>
       </.simple_form>

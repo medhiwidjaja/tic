@@ -6,10 +6,10 @@ defmodule TicWeb.GameLive.Show do
     game_name = params["id"]
 
     if Enum.member?(Tic.active_games(), game_name) do
-      game_state = Tic.status(game_name)
+      game_state = Tic.get_state(game_name)
       logged_in? = Map.has_key?(socket.assigns, :current_user)
       current_user = logged_in? && socket.assigns.current_user
-      Phoenix.PubSub.subscribe(Tic.PubSub, "game:#{game_name}")
+      TicWeb.GameChannel.subscribe("game:#{game_name}")
 
       {:ok,
        socket
@@ -32,16 +32,12 @@ defmodule TicWeb.GameLive.Show do
   Info event handler to update the game based on message from every move
   """
   @impl true
-  def handle_info({:update, %{game: game}}, socket) do
+  def handle_info(%{event: "update", payload: %{game: game, game_status: game_status}}, socket) do
     {:noreply,
      socket
-     |> assign(:game, game)}
+     |> assign(:game, game)
+     |> assign(:game_status, game_status)}
   end
 
-  defp disable_move?(_game, nil), do: true
-
-  defp disable_move?(game, player) do
-    game.finished || !(game.status in [:ready, :in_progress]) ||
-      game.next != player.symbol
-  end
+  defdelegate disable_move?(game, player), to: Tic.Game
 end

@@ -14,20 +14,22 @@ defmodule Tic.GameServerTest do
     :ok
   end
 
-  test "status of a new game with the given player and default AI player" do
-    assert GameServer.status(@game_name) == %Game{
-             name: @game_name,
-             x: @sam,
-             o: @ai_player
-           }
+  test "Jane joins as a second player, returns :ok, with game status :ready" do
+    assert GameServer.join(@game_name, @jane) ==
+             {:ok,
+              %Game{
+                name: @game_name,
+                x: @sam,
+                o: @jane,
+                status: :ready
+              }}
   end
 
-  test "Jane joins as a second player" do
-    assert GameServer.join(@game_name, @jane) == %Game{
-             name: @game_name,
-             x: @sam,
-             o: @jane
-           }
+  test "Jane can't join if there are two players already" do
+    GameServer.join(@game_name, @ai_player)
+
+    assert GameServer.join(@game_name, @jane) ==
+             {:error, "Game has two players already"}
   end
 
   test "Sam makes a move to cell 5" do
@@ -48,9 +50,10 @@ defmodule Tic.GameServerTest do
     expected_result = %Game{
       name: @game_name,
       x: @sam,
-      o: @ai_player,
+      o: nil,
       board: expected_board,
       round: 1,
+      status: :in_progress,
       next: :o
     }
 
@@ -75,7 +78,7 @@ defmodule Tic.GameServerTest do
     GameServer.make_move(@game_name, @jane, 2)
     GameServer.make_move(@game_name, @sam, 9)
 
-    assert GameServer.status(@game_name) == %Game{
+    assert GameServer.get_state(@game_name) == %Game{
              name: "ninja-game",
              x: @sam,
              o: @jane,
@@ -109,7 +112,7 @@ defmodule Tic.GameServerTest do
     GameServer.make_move(@game_name, @jane, 3)
     GameServer.make_move(@game_name, @sam, 8)
 
-    assert GameServer.status(@game_name) == %Game{
+    assert GameServer.get_state(@game_name) == %Game{
              name: "ninja-game",
              x: %Player{@sam | streak: 1},
              o: @jane,
@@ -135,15 +138,18 @@ defmodule Tic.GameServerTest do
            }
   end
 
-  test "making a move when it's no the player's game turn returns an error" do
-    assert GameServer.make_move(@game_name, @jane, 1) == {:error, "Not player's turn"}
+  test "making a move when it's not the player's turn will be ignored" do
+    unchanged_game = GameServer.get_state(@game_name)
+    assert GameServer.make_move(@game_name, @jane, 1) == unchanged_game
   end
 
   test "resetting the game" do
+    GameServer.join(@game_name, @ai_player)
     GameServer.make_move(@game_name, @sam, 1)
     GameServer.make_move(@game_name, @ai_player)
 
     assert GameServer.reset(@game_name) == %Game{
+             name: @game_name,
              x: @sam,
              o: @ai_player,
              board: %Board{},
