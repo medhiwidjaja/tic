@@ -12,6 +12,24 @@
       </:header>
       <.running_games games={@active_games} title="Active games" />
     </.card>
+    <.game_card name1={@player_x} name2={@player_o}>
+      <.game_board
+        board={@game.board}
+        player_symbol={@player && @player.symbol}
+        strike={@game.strike}
+      />
+      <:messages>
+        <.game_message game={@game} />
+      </:messages>
+      <:buttons>
+        <%= if @game.finished do %>
+          <.action_button phx-click="start-demo">Play again</.action_button>
+        <% end %>
+        <%= if @game.status == :ready do %>
+          <.action_button phx-click="start-demo">Start</.action_button>
+        <% end %>
+      </:buttons>
+    </.game_card>
     <div>
       <.spinner hide={false} />
     </div>

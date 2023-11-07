@@ -31,7 +31,7 @@ defmodule TicWeb.GameLive.Play do
          |> push_navigate(to: ~p"/games/#{game_name}")}
       else
         _ ->
-          GameChannel.subscribe("game:#{game_name}")
+          GameChannel.subscribe(@topic_prefix <> game_name)
 
           {:ok,
            socket
@@ -104,8 +104,6 @@ defmodule TicWeb.GameLive.Play do
         %{"player" => symbol, "cell" => cell},
         %{assigns: %{game_name: game_name}} = socket
       ) do
-    socket.assigns.game
-
     game =
       game_name
       |> Tic.make_move(symbol, cell)
