@@ -24,7 +24,7 @@
             Join this game
           </.action_button>
         <% end %>
-        <%= if @game.status == :ready do %>
+        <%= if @game.status == :accepted do %>
           <.action_button phx-click="start">
             Start
           </.action_button>
@@ -50,4 +50,23 @@
     <:header>Share this URL with your friend to play</:header>
     <p><%= url(~p"/games/#{@game_name}/play") %></p>
   </.card>
+</.modal>
+
+<.modal
+  :if={@game.status == :ready}
+  id="ready-modal"
+  show
+  on_cancel={JS.patch(~p"/games/#{@game_name}/play")}
+>
+  <div>
+    <.spinner hide={false} />
+    <div id="shuffler" class="flex justify-center items-center">
+      <.x_mark class="h-10 w-10 mr-5" />
+      <div id="shuffles" class="flex justify-center">
+        <.bouncing direction="right"><%= @game.x.name %></.bouncing>
+        <.bouncing direction="left"><%= @game.o.name %></.bouncing>
+      </div>
+      <.o_mark class="h-10 w-10 ml-5" />
+    </div>
+  </div>
 </.modal>

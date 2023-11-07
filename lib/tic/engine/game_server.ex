@@ -67,6 +67,10 @@ defmodule Tic.GameServer do
     GenServer.call(via_tuple(game_name), {:reset})
   end
 
+  def shuffle_players(game_name) do
+    GenServer.call(via_tuple(game_name), {:shuffle_players})
+  end
+
   ### server process
 
   @doc """
@@ -83,7 +87,7 @@ defmodule Tic.GameServer do
       updated_game =
         game
         |> Game.put_player(player.symbol, player)
-        |> Game.set_status(:ready)
+        |> Game.set_status(:accepted)
 
       {:reply, {:ok, updated_game}, updated_game}
     else
@@ -138,4 +142,18 @@ defmodule Tic.GameServer do
     reset_game = Game.reset(game)
     {:reply, reset_game, reset_game}
   end
+
+  def handle_call({:shuffle_players}, _from, game) do
+    n = :rand.uniform(40)
+    updated_game = do_shuffle_players(game, n)
+    {:reply, updated_game, updated_game}
+  end
+
+  defp do_shuffle_players(game, 0), do: game
+
+  defp do_shuffle_players(game, n_times) do
+    do_shuffle_players(switch_players(game), n_times - 1)
+  end
+
+  defdelegate switch_players(game), to: Game
 end

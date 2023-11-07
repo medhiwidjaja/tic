@@ -39,7 +39,6 @@ defmodule Tic do
     player =
       game_name
       |> GameServer.get_state()
-      |> IO.inspect(label: "TIC MOVE")
       |> Game.get_player(symbol)
 
     GameServer.make_move(game_name, player, String.to_integer(cell))

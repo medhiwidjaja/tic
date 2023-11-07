@@ -5,7 +5,7 @@ defmodule TicWeb.GameComponents do
   use Phoenix.Component
   use TicWeb, :verified_routes
 
-  # alias Phoenix.LiveView.JS
+  alias Phoenix.LiveView.JS
 
   attr :board, :map
   attr :player_symbol, :string
@@ -13,9 +13,6 @@ defmodule TicWeb.GameComponents do
   attr :strike, :list, default: []
 
   def game_board(assigns) do
-    IO.inspect(assigns.player_symbol, label: "BOARD PLAYER SYMBOL")
-    IO.inspect(assigns.disable, label: "BOARD DISABLE?")
-
     ~H"""
     <div class="w-[310px] h-[310px] mx-auto bg-zinc-300 grid grid-cols-3 gap-2 place-content-center">
       <%= for i <- 1..9 do %>
@@ -106,7 +103,9 @@ defmodule TicWeb.GameComponents do
 
   defp message(:init, _game), do: "Let's play a game!"
   defp message(:tie, _game), do: "It's a tie"
-  defp message(_, game), do: "#{Tic.Game.get_player(game, game.next).name} plays next"
+  defp message(:ready, _game), do: "Click start to begin"
+  defp message(:accepted, game), do: "#{game.o.name} accepted the challenge"
+  defp message(_, game), do: "#{Tic.Game.get_next_player(game).name} plays next"
 
   attr :class, :string, default: nil
 
@@ -114,4 +113,15 @@ defmodule TicWeb.GameComponents do
 
   def o_mark(assigns),
     do: ~H(<img src={~p"/images/circle-thin-svgrepo-com.svg"} class={@class} />)
+
+  attr :direction, :string
+  slot :inner_block, required: true
+
+  def bouncing(assigns) do
+    ~H"""
+    <div class={"px-10 font-bold text-xl text-zinc-900 animate-bounce-#{@direction}"}>
+      <%= render_slot(@inner_block) %>
+    </div>
+    """
+  end
 end

@@ -62,44 +62,6 @@ defmodule TicWeb.GameLive.Play do
 
   @impl true
   def handle_event(
-        "make-move",
-        %{"player" => symbol, "cell" => cell},
-        %{assigns: %{game_name: game_name}} = socket
-      ) do
-    socket.assigns.game
-
-    game =
-      game_name
-      |> Tic.make_move(symbol, cell)
-      |> maybe_make_computer_move()
-
-    broadcast("update", game)
-
-    {:noreply, assign(socket, :game, game)}
-  end
-
-  @impl true
-  def handle_event("reset", _, %{assigns: %{game_name: game_name}} = socket) do
-    game = Tic.reset(game_name)
-    broadcast("update", game)
-    {:noreply, assign(socket, :game, game)}
-  end
-
-  @impl true
-  def handle_event("start", _, %{assigns: %{game_name: game_name}} = socket) do
-    Tic.set_status(game_name, :in_progress)
-    game = Tic.get_state(game_name)
-
-    game = shuffle_players(game)
-
-    {:noreply,
-     socket
-     |> assign(:game, game)
-     |> assign(:game_status, game.status)}
-  end
-
-  @impl true
-  def handle_event(
         "join",
         %{"player" => name},
         %{assigns: %{game_name: game_name}} = socket
@@ -123,6 +85,50 @@ defmodule TicWeb.GameLive.Play do
     end
   end
 
+  @impl true
+  def handle_event("start", _, %{assigns: %{game_name: game_name}} = socket) do
+    Tic.set_status(game_name, :ready)
+    game = Tic.get_state(game_name)
+    broadcast("update", game)
+    Process.send_after(self(), %{event: "shuffle", payload: %{game: game}}, 3000)
+
+    {:noreply,
+     socket
+     |> assign(:game, game)
+     |> assign(:game_status, game.status)}
+  end
+
+  @impl true
+  def handle_event(
+        "make-move",
+        %{"player" => symbol, "cell" => cell},
+        %{assigns: %{game_name: game_name}} = socket
+      ) do
+    socket.assigns.game
+
+    game =
+      game_name
+      |> Tic.make_move(symbol, cell)
+      |> maybe_make_computer_move()
+
+    broadcast("update", game)
+
+    {:noreply, assign(socket, :game, game)}
+  end
+
+  @impl true
+  def handle_event("reset", _, %{assigns: %{game_name: game_name}} = socket) do
+    game = Tic.reset(game_name)
+
+    broadcast("update", game)
+    Process.send_after(self(), %{event: "shuffle", payload: %{game: game}}, 3000)
+
+    {:noreply,
+     socket
+     |> assign(:game, game)
+     |> assign(:game_status, game.status)}
+  end
+
   @doc """
   "update" event handler to update the game based on message from every move
 
@@ -132,10 +138,15 @@ defmodule TicWeb.GameLive.Play do
   """
   @impl true
   def handle_info(%{event: "update", payload: %{game: game}}, socket) do
+    signed_in_player = signed_in_player(game, socket.assigns.current_user)
+
     {:noreply,
      socket
      |> assign(:game, game)
-     |> assign(:game_status, game.status)}
+     |> assign(:game_status, game.status)
+     |> assign(:player_x, game.x.name)
+     |> assign(:player_o, game.o.name)
+     |> assign(:player, signed_in_player)}
   end
 
   @impl true
@@ -149,32 +160,12 @@ defmodule TicWeb.GameLive.Play do
 
   @impl true
   def handle_info(%{event: "shuffle", payload: %{game: game}}, socket) do
-    {:noreply,
-     socket
-     |> assign(:game, game)
-     |> assign(:player_x, game.x.name)
-     |> assign(:player_o, game.o.name)}
+    Tic.set_status(game.name, :in_progress)
+    updated_game = GameServer.shuffle_players(game.name)
+    broadcast("update", updated_game)
+
+    {:noreply, socket}
   end
-
-  defp shuffle_players(game) do
-    n = :rand.uniform(20)
-    do_shuffle_players(game, n)
-  end
-
-  defp do_shuffle_players(game, 0) do
-    broadcast("shuffle", game)
-    game
-  end
-
-  defp do_shuffle_players(game, n_times) do
-    :timer.sleep(1000)
-    updated_game = do_shuffle_players(switch_players(game), n_times - 1)
-
-    broadcast("shuffle", game)
-    updated_game
-  end
-
-  defdelegate switch_players(game), to: Game
 
   defp maybe_make_computer_move(game) do
     player = Game.get_player(game, game.next)

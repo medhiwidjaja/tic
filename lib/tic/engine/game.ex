@@ -179,6 +179,8 @@ defmodule Tic.Game do
   def get_player(game, :o), do: game.o
   def get_player(_, _), do: nil
 
+  def get_next_player(game), do: get_player(game, game.next)
+
   defp next_turn(:x), do: :o
   defp next_turn(:o), do: :x
 
