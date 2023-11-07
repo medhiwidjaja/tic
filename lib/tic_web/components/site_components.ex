@@ -108,7 +108,7 @@ defmodule TicWeb.SiteComponents do
     <div class="relative flex flex-col items-center rounded-[20px] w-[400px] mx-auto p-4 bg-white bg-clip-border shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:text-white dark:!shadow-none">
       <div class="relative flex h-32 w-full justify-center rounded-xl bg-cover">
         <img
-          src="https://horizon-tailwind-react-git-tailwind-components-horizon-ui.vercel.app/static/media/banner.ef572d78f29b0fee0a09.png"
+          src="/images/banner.png"
           class="absolute flex h-10 w-full justify-center rounded-xl bg-cover"
         />
         <div class="absolute bottom-10 w-full px-10 flex justify-between">
@@ -134,6 +134,21 @@ defmodule TicWeb.SiteComponents do
       </div>
       <div class="flex justify-center w-full">
         <%= render_slot(@buttons) %>
+      </div>
+    </div>
+    """
+  end
+
+  attr :id, :string, default: "spinner"
+  attr :hide, :boolean, default: true
+
+  def spinner(assigns) do
+    ~H"""
+    <div class={["h-full", @hide && "hidden"]} id={@id}>
+      <div class="flex justify-center items-center h-full">
+        <div class="pixel-spinner">
+          <div class="pixel-spinner-inner"></div>
+        </div>
       </div>
     </div>
     """
