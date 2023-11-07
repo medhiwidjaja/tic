@@ -45,7 +45,7 @@ defmodule TicWeb.GameLive.Index do
   def handle_event("start-demo", _, socket) do
     game_state = init_game()
     Tic.set_status(@game_demo, :in_progress)
-    Process.send_after(self(), "ai-move", 500)
+    Process.send_after(self(), "ai-move", 1000)
 
     {:noreply, init_assigns(game_state, socket)}
   end
@@ -73,11 +73,12 @@ defmodule TicWeb.GameLive.Index do
     GameChannel.broadcast!(@topic_prefix <> @game_demo, "update", %{game: game})
 
     {:noreply, assign(socket, :game, game)}
+    # end
   end
 
   @impl true
   def handle_info(%{event: "update", payload: %{game: game}}, socket) do
-    if !game.finished, do: Process.send_after(self(), "ai-move", 1000)
+    if game.status == :in_progress, do: Process.send_after(self(), "ai-move", 1000)
 
     {:noreply, init_assigns(game, socket)}
   end
