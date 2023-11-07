@@ -11,7 +11,8 @@
         <.game_message game={@game} />
       </:messages>
     </.game_card>
-    <.card class="bg-zinc-300 mx-5 h-full">
+    <.card class="bg-zinc-300">
+      <:header>Chat</:header>
       <%= live_render(@socket, TicWeb.ChatLive,
         id: "chat-#{@game.name}",
         session: %{"name" => @current_user && @current_user.name, "game_name" => @game.name}
