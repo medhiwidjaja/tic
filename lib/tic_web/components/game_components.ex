@@ -78,14 +78,10 @@ defmodule TicWeb.GameComponents do
   end
 
   attr :games, :list
-  attr :title, :string, required: true
 
   def running_games(assigns) do
     ~H"""
     <div>
-      <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-        <%= @title %>
-      </h5>
       <ul class="list-disc">
         <li :for={game <- @games} id={game.name} class="rounded-lg hover:bg-zinc-600 p-1">
           <.link navigate={~p"/games/#{game.name}"}>
@@ -109,6 +105,7 @@ defmodule TicWeb.GameComponents do
 
   attr :class, :string, default: nil
 
+  @spec x_mark(map()) :: Phoenix.LiveView.Rendered.t()
   def x_mark(assigns), do: ~H(<img src={~p"/images/x-thin-svgrepo-com.svg"} class={@class} />)
 
   def o_mark(assigns),

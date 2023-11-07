@@ -2,34 +2,46 @@
   <div class="grid grid-cols-1 gap-6 py-1 px-1 lg:py-10 lg:px-6 lg:grid-cols-2 rounded-box">
     <.card>
       <:header>
-        <.link
-          :if={@logged_in}
-          navigate={~p"/games/new"}
-          class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          Start a new game
-        </.link>
+        <div class="flex justify-between">
+          <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Active Games
+          </h5>
+          <.link
+            :if={@logged_in}
+            navigate={~p"/games/new"}
+            class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            Start a new game
+          </.link>
+        </div>
       </:header>
-      <.running_games games={@active_games} title="Active games" />
+      <.running_games games={@active_games} />
     </.card>
-    <.game_card name1={@player_x} name2={@player_o}>
-      <.game_board
-        board={@game.board}
-        player_symbol={@player && @player.symbol}
-        strike={@game.strike}
-      />
-      <:messages>
-        <.game_message game={@game} />
-      </:messages>
-      <:buttons>
-        <%= if @game.finished do %>
-          <.action_button phx-click="start-demo">Play again</.action_button>
-        <% end %>
-        <%= if @game.status == :init do %>
-          <.action_button phx-click="start-demo">Start</.action_button>
-        <% end %>
-      </:buttons>
-    </.game_card>
+    <.card>
+      <:header>
+        <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          Demo Game
+        </h5>
+      </:header>
+      <.game_card name1={@player_x} name2={@player_o}>
+        <.game_board
+          board={@game.board}
+          player_symbol={@player && @player.symbol}
+          strike={@game.strike}
+        />
+        <:messages>
+          <.game_message game={@game} />
+        </:messages>
+        <:buttons>
+          <%= if @game.finished do %>
+            <.action_button phx-click="start-demo">Play again</.action_button>
+          <% end %>
+          <%= if @game.status == :init do %>
+            <.action_button phx-click="start-demo">Start</.action_button>
+          <% end %>
+        </:buttons>
+      </.game_card>
+    </.card>
     <div>
       <.spinner hide={false} />
     </div>
