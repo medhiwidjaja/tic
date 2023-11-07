@@ -63,8 +63,8 @@ defmodule Tic.GameServer do
     end
   end
 
-  def reset(game_name) do
-    GenServer.call(via_tuple(game_name), {:reset})
+  def reset(game_name, status) do
+    GenServer.call(via_tuple(game_name), {:reset, status})
   end
 
   def shuffle_players(game_name) do
@@ -138,8 +138,8 @@ defmodule Tic.GameServer do
     {:reply, Game.get_state(game), game}
   end
 
-  def handle_call({:reset}, _from, game) do
-    reset_game = Game.reset(game)
+  def handle_call({:reset, status}, _from, game) do
+    reset_game = Game.reset(game, status)
     {:reply, reset_game, reset_game}
   end
 

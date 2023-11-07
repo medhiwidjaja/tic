@@ -25,7 +25,7 @@
         <%= if @game.finished do %>
           <.action_button phx-click="start-demo">Play again</.action_button>
         <% end %>
-        <%= if @game.status == :ready do %>
+        <%= if @game.status == :init do %>
           <.action_button phx-click="start-demo">Start</.action_button>
         <% end %>
       </:buttons>

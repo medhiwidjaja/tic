@@ -55,7 +55,7 @@ defmodule TicWeb.GameLive.Index do
     ai_player2 = %Player{name: "AI 2", type: :computer, symbol: :o}
     Tic.new_game(@game_demo, ai_player1)
     Tic.join(@game_demo, ai_player2)
-    Tic.reset(@game_demo)
+    Tic.reset(@game_demo, :init)
   end
 
   defp init_assigns(game_state, socket) do

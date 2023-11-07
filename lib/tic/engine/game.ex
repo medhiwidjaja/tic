@@ -195,12 +195,12 @@ defmodule Tic.Game do
     %Tic.Game{x: "Sam", o: "Jack", status: :ready, round: 0}
 
   """
-  def reset(game),
+  def reset(game, status \\ :ready),
     do: %__MODULE__{
       name: game.name,
       x: game.x,
       o: game.o,
-      status: :ready,
+      status: status,
       next: :x
     }
 

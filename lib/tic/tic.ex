@@ -59,5 +59,5 @@ defmodule Tic do
   @doc """
   Reset the game to :ready state and blank board. Existing players are retained.
   """
-  defdelegate reset(game_name), to: GameServer
+  defdelegate reset(game_name, status \\ :ready), to: GameServer
 end
